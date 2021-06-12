@@ -129,23 +129,17 @@ public:
             //std::cout << "FREE FRAMES IN BUFFER: " << numFramesAvailable << "\n";
             //std::cout << "QUEUESIZE: " << input->size() << "\n";
 
-            recievedPacket = inputBuffer->getPacket(&pPacket);
+            DWORD waitResult = WaitForSingleObject(readyHandle, INFINITE);
 
-            if (recievedPacket) {
-                
-                DWORD waitResult = WaitForSingleObject(readyHandle, INFINITE);
+            while(!inputBuffer->getPacket(&pPacket)){}
+               
+            hr = pRenderClient->GetBuffer(framesPerPacket, &pData);
 
-                // Grab all the available space in the shared buffer.
-                
+            memcpy(pData, pPacket, bytesPerPacket);
 
-                hr = pRenderClient->GetBuffer(framesPerPacket, &pData);
+            hr = pRenderClient->ReleaseBuffer(framesPerPacket, flags);
+            
 
-                memcpy(pData, pPacket, bytesPerPacket);
-
-                hr = pRenderClient->ReleaseBuffer(framesPerPacket, flags);
-            }
-
-            Sleep(10);
         }
         return 0;
     }

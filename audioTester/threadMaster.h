@@ -108,17 +108,6 @@ public:
 		pRender->initializeBufferHandle();
 
 		outFormat = pRender->getDefaultFormatExtensible();
-		return 0;
-	}
-
-	HRESULT initializeThreadProcessor() {
-		pProcess = new threadProcess();
-
-		pProcess->setBuffers(reader_to_proc, proc_to_render);
-
-		pProcess->setOutputPacketLength(1024, 2);
-
-		pProcess->setInputPacketLength(1024, 2);
 		
 		return 0;
 	}
@@ -140,9 +129,21 @@ public:
 
 		return 0;
 	}
+	
+	HRESULT initializeThreadProcessor() {
+		pProcess = new threadProcess();
+
+		pProcess->setBuffers(reader_to_proc, proc_to_render);
+
+		pProcess->setOutputPacketLength(prPacketLength, prBufferSize);
+
+		pProcess->setInputPacketLength(rpPacketLength, rpBufferSize);
+		
+		return 0;
+	}
 
 	HRESULT start() {
-		
+
 		std::thread* captureThread = new std::thread(startRead, pRead);
 		//Sleep(10);
 		std::thread* processThread = new std::thread(startProcess, pProcess);
@@ -153,6 +154,7 @@ public:
 		renderThread->join();
 		processThread->join();
 		captureThread->join();
+		
 		return 0;
 	}
 };

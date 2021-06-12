@@ -69,19 +69,8 @@ public:
         while (1) {
             float* pInData = (float*)malloc(bytesPerPacketIn);
             //float* pOutData = (float*)malloc(bytesPerPacketOut);
-            while (!inputBuffer->getPacket(&pInData)) {
-                Sleep(10);
-            }
-
-            //for (size_t i = 0; i < ; i++)
-            //{
-            //
-            //}
-
-            while (!outputBuffer->putPacket(&pInData)) {
-                Sleep(10);
-            }
-            Sleep(10);
+            while (!inputBuffer->getPacket(&pInData)) {}
+            while (!outputBuffer->putPacket(&pInData)) {}
         }
         
         return 0;

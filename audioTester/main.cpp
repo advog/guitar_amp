@@ -174,27 +174,34 @@ int main() {
 
     IMMDeviceEnumerator* pEnumerator;
     threadMaster* pMaster = new threadMaster();
-
+    
+    //create device enumerator
     hr = CoInitialize(NULL);
 
     hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, (void**)&pEnumerator);
 
+    //give enumerator to master thread
     pMaster->setEnumerator(pEnumerator);
 
+    //set the buffer sizes on the master thread
     pMaster->setBufferSettings(2, 2, 1024, 1024);
 
+    //initialize the output endpoint
     pMaster->initializeOutputDevice();
 
+    //initialize the input endpoint
     pMaster->initializeInputDevice();
 
+    //initialize the data buffers
     pMaster->initializeDataBuffers();
 
+    //initialize classes
+    //order is render, read, process becaues process needs the formats of the other devices
     pMaster->initializeThreadRenderer();
-
+    pMaster->initializeThreadRead();
     pMaster->initializeThreadProcessor();
 
-    pMaster->initializeThreadRead();
-
+    //start
     pMaster->start();
 
     return hr;
