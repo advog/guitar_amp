@@ -135,12 +135,15 @@ public:
         //packet return result
         UCHAR recievedPacket;
 
+        //in bytes
         UINT32 leftoverSize = 0;
-        float* leftovers = (float*)malloc(sizeof(float) * 1024);
+        
+        float* leftovers = (float*)malloc(sizeof(float) * 2048);
         UINT32 numPackets = 0;
 
-        UINT32 framesInNextBuffer = 1;
+        UINT32 framesInNextBuffer = 0;
         UINT32 framesInCurBuffer = 0;
+        UINT32 bytesInCurBuffer = 0;
 
         hr = pAudioClient->Start();  // Start playing.
 
@@ -162,7 +165,8 @@ public:
             hr = pCaptureClient->GetBuffer(&pData, &framesInCurBuffer, &flags, NULL, NULL);
 
             numPackets = (framesInCurBuffer) / framesPerPacket;
-            std::cout << "NUMPACKETS: " << numPackets << "\n";
+            bytesInCurBuffer = framesInCurBuffer * sizeof(float) * numChannels;
+            //std::cout << "NUMPACKETS: " << numPackets << "\n";
 
             float** newPackets = (float**)malloc(sizeof(float*) * numPackets);
             for (size_t i = 0; i < numPackets; i++)
@@ -170,37 +174,42 @@ public:
                 *(newPackets + i) = (float*)malloc(bytesPerPacket);
             }
 
-            /*
-            float* cast = (float*)pData;
-            float* shit = (float*)malloc(bytesPerPacket * 2);
-            //memcpy(shit, pData, bytesPerSample * framesInNextBuffer);
-            while (!outputBuffer->putPacket(&cast)) {
-                Sleep(10);
-            }
-            */
 
             //fill up the new packets
+            //use leftovers first
             //copy the rest into leftovers
             //update leftovers length
             
+            //all indexes are in bytes
             
-            //TTOD LEFTOVERS
-            UINT32 indexInBytes = 0;
-            for (size_t i = 0; i < numPackets; i++)
+            UINT32 bufferIndex = 0;
+            
+            memcpy(*(newPackets), leftovers, leftoverSize);
+            memcpy(*(newPackets), pData, bytesPerPacket - leftoverSize);
+            bufferIndex = bytesPerPacket - leftoverSize;
+
+            UCHAR pcount = 1;
+            while (bufferIndex + bytesPerPacket < bytesInCurBuffer)
             {
-                std::cout << "COPY\n";
-                memcpy(*(newPackets + i), pData + indexInBytes, bytesPerPacket);
-                indexInBytes += bytesPerPacket;
+                memcpy(*(newPackets + pcount), pData + bufferIndex, bytesPerPacket);
+                bufferIndex += bytesPerPacket;
             }
-            
+
+            memcpy(leftovers, pData + bufferIndex, bytesInCurBuffer - bufferIndex);
+            leftoverSize = bytesInCurBuffer - bufferIndex;
+
+            //frees pData
             hr = pCaptureClient->ReleaseBuffer(framesInCurBuffer);
             
             for (size_t i = 0; i < numPackets; i++)
             {
                 while (!outputBuffer->putPacket(newPackets+i)) {}
+                //free(*(newPackets + i));
             }
             
             //hr = pCaptureClient->GetNextPacketSize(&framesInNextBuffer);
+
+            free(newPackets);
 
         }
         return 0;

@@ -67,7 +67,8 @@ public:
 
         //just move packets here
         while (1) {
-            float* pInData = (float*)malloc(bytesPerPacketIn);
+            float* pInData;
+            //= (float*)malloc(bytesPerPacketIn);
             //float* pOutData = (float*)malloc(bytesPerPacketOut);
             while (!inputBuffer->getPacket(&pInData)) {}
             while (!outputBuffer->putPacket(&pInData)) {}

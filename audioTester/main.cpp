@@ -184,7 +184,7 @@ int main() {
     pMaster->setEnumerator(pEnumerator);
 
     //set the buffer sizes on the master thread
-    pMaster->setBufferSettings(2, 2, 1024, 1024);
+    pMaster->setBufferSettings(10, 10, 1024, 1024);
 
     //initialize the output endpoint
     pMaster->initializeOutputDevice();

@@ -138,7 +138,7 @@ public:
             memcpy(pData, pPacket, bytesPerPacket);
 
             hr = pRenderClient->ReleaseBuffer(framesPerPacket, flags);
-            
+            free(pPacket);
 
         }
         return 0;

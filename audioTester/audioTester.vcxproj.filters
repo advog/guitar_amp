@@ -35,5 +35,8 @@
     <ClInclude Include="threadRead.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="packetFormater.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

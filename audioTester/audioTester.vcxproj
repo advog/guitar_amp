@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dataBuffer.h" />
+    <ClInclude Include="packetFormater.h" />
     <ClInclude Include="threadMaster.h" />
     <ClInclude Include="threadProcess.h" />
     <ClInclude Include="threadRead.h" />

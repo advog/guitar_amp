@@ -24,7 +24,6 @@ public:
 		}
 		*pPacket = *(buffer + consumeCount % bufferSize);
 		consumeCount++;
-		//std::cout<< "CONSUME COUNT: " << consumeCount << "\n";
 		return 1;
 	}
 
@@ -34,7 +33,7 @@ public:
 		}
 		*(buffer + produceCount % bufferSize) = *pPacket;
 		produceCount++;
-		//std::cout << "PRODUCE COUNT: " << produceCount << "\n";
+		//std::cout << "PACKETS IN BUFFER : " << produceCount - consumeCount << "\n";
 		return 1;
 	}
 };
