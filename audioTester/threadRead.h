@@ -26,7 +26,7 @@ public:
     dataBuffer<float*>* outputBuffer;
 
     //utility
-    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
+    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_MILLISEC *3;
     DWORD flags = 0;
 
     //wasapi pointers
@@ -127,7 +127,7 @@ public:
         HRESULT hr;
 
         //buffer pointer
-        BYTE* pData;
+        BYTE* pData = (BYTE*)malloc(sizeof(float) * packetLength * 4);
 
         //packet pointer
         float* pPacket;
@@ -147,21 +147,22 @@ public:
 
         hr = pAudioClient->Start();  // Start playing.
 
+        
         while (/**halt == 0*/1) {
 
-            BYTE* pData = (BYTE*)malloc(sizeof(float) * packetLength*4);
-
             
 
+            
             //create N many packet sized arrays to copy
             //data where n is enough to completely fill with buffer + leftovers
-            
             //leftover size in frames = leftoverSize/numchannels
             //leftoverSize / numChannels + 
             
 
             DWORD waitResult = WaitForSingleObject(readyHandle, INFINITE);
             
+            //std::cout << "WAIT OVER";
+
             hr = pCaptureClient->GetBuffer(&pData, &framesInCurBuffer, &flags, NULL, NULL);
 
             numPackets = (framesInCurBuffer) / framesPerPacket;
@@ -199,6 +200,9 @@ public:
             leftoverSize = bytesInCurBuffer - bufferIndex;
 
             //frees pData
+
+            //WHAT!
+            //free(pData);
             hr = pCaptureClient->ReleaseBuffer(framesInCurBuffer);
             
             for (size_t i = 0; i < numPackets; i++)

@@ -18,7 +18,7 @@ public:
     dataBuffer<float*>* inputBuffer;
 
     //utility
-    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_SEC;
+    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_MILLISEC * 3;
     DWORD flags = 0;
 
     //wasapi pointers

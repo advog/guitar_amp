@@ -1,11 +1,19 @@
 #pragma once
+#include <iostream>
+#include <chrono>
+#include <ctime>
 
 template <class T>
 class dataBuffer {
 public:
 
+
 	std::atomic<UINT32> produceCount;
 	std::atomic<UINT32> consumeCount;
+
+	std::chrono::time_point<std::chrono::high_resolution_clock> start;
+	std::chrono::time_point<std::chrono::high_resolution_clock> stop;
+
 
 	T* buffer;
 
@@ -24,6 +32,13 @@ public:
 		}
 		*pPacket = *(buffer + consumeCount % bufferSize);
 		consumeCount++;
+		
+		if (consumeCount % 1000 == 1) { 
+			stop = std::chrono::high_resolution_clock::now();
+			std::chrono::duration<double> diff = stop - start;
+			std::cout << "dataBuffer latency: " << diff.count() << "\n";
+		}
+		
 		return 1;
 	}
 
@@ -33,7 +48,9 @@ public:
 		}
 		*(buffer + produceCount % bufferSize) = *pPacket;
 		produceCount++;
-		//std::cout << "PACKETS IN BUFFER : " << produceCount - consumeCount << "\n";
+
+		if (produceCount % 1000 == 1) { start = std::chrono::high_resolution_clock::now(); }
+
 		return 1;
 	}
 };
