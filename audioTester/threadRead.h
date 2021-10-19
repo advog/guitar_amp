@@ -26,7 +26,7 @@ public:
     dataBuffer<float*>* outputBuffer;
 
     //utility
-    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_MILLISEC *3;
+    REFERENCE_TIME hnsRequestedDuration = REFTIMES_PER_MILLISEC * 0.5;
     DWORD flags = 0;
 
     //wasapi pointers
@@ -56,13 +56,11 @@ public:
 
     HANDLE readyHandle = NULL;
 
-    HRESULT setDevice(IMMDevice* p) {
+    void setDevice(IMMDevice* p) {
         pDevice = p;
-
-        return 0;
     }
 
-    HRESULT initializeEngine() {
+    void initializeEngine() {
         HRESULT hr;
 
         //activate the device
@@ -87,16 +85,13 @@ public:
         hr = pAudioClient->GetService(IID_IAudioCaptureClient, (void**)&pCaptureClient);
 
         checkR(hr);
-
-        return hr;
     }
 
-    HRESULT setBuffer(dataBuffer<float*>* p) {
+    void setBuffer(dataBuffer<float*>* p) {
         outputBuffer = p;
-        return 0;
     }
 
-    HRESULT initializeBufferHandle() {
+    void initializeBufferHandle() {
         HRESULT hr;
 
         //handle indicates when to call getBuffer
@@ -104,8 +99,6 @@ public:
         hr = pAudioClient->SetEventHandle(readyHandle);
 
         checkR(hr);
-
-        return hr;
     }
 
     WAVEFORMATEXTENSIBLE* getDefaultFormatExtensible() {
@@ -116,14 +109,13 @@ public:
         return pFormat;
     }
 
-    HRESULT setOutputPacketLength(UINT32 l) {
+    void setOutputPacketLength(UINT32 l) {
         packetLength = l;
         bytesPerPacket = l * sizeof(float);
         framesPerPacket = l / numChannels;
-        return 0;
     }
 
-    HRESULT start() {
+    void start() {
         HRESULT hr;
 
         //buffer pointer
@@ -216,7 +208,5 @@ public:
             free(newPackets);
 
         }
-        return 0;
     }
-
 };

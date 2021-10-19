@@ -4,7 +4,7 @@
 
 #include "dataBuffer.h"
 
-HRESULT loadSine(BYTE* buffer, UINT32 nFrames, UINT32 samplesPerSecond, USHORT channels, UINT32 freq, double* theta) {
+void loadSine(BYTE* buffer, UINT32 nFrames, UINT32 samplesPerSecond, USHORT channels, UINT32 freq, double* theta) {
 
     float* castedBuffer = (float*)(buffer);
     DWORD location = 0;
@@ -17,7 +17,6 @@ HRESULT loadSine(BYTE* buffer, UINT32 nFrames, UINT32 samplesPerSecond, USHORT c
         }
         *theta += increment;
     }
-    return 0;
 }
 
 class threadProcess {
@@ -41,31 +40,29 @@ public:
     UINT32 framesPerPacketIn;
     UINT32 bytesPerPacketIn;
 
-    HRESULT setBuffers(dataBuffer <float*>* pIn, dataBuffer<float*>* pOut) {
+    void setBuffers(dataBuffer <float*>* pIn, dataBuffer<float*>* pOut) {
         outputBuffer = pOut;
         inputBuffer = pIn;
-        return 0;
     }
 
-    HRESULT setInputPacketLength(UINT32 l, UCHAR c) {
+    void setInputPacketLength(UINT32 l, UCHAR c) {
         numChannelsIn = c;
         packetLengthIn = l;
         bytesPerPacketIn = l * sizeof(float);
         framesPerPacketIn = l / numChannelsIn;
-        return 0;
     }
 
-    HRESULT setOutputPacketLength(UINT32 l, UCHAR c) {
+    void setOutputPacketLength(UINT32 l, UCHAR c) {
         numChannelsOut = c;
         packetLengthOut = l;
         bytesPerPacketOut = l * sizeof(float);
         framesPerPacketOut = l / numChannelsOut;
-        return 0;
     }
 	
-	HRESULT start() {
+	void start() {
 
         //just move packets here
+        //placeholder for signal processing
         while (1) {
             float* pInData;
             //= (float*)malloc(bytesPerPacketIn);
@@ -73,8 +70,5 @@ public:
             while (!inputBuffer->getPacket(&pInData)) {}
             while (!outputBuffer->putPacket(&pInData)) {}
         }
-        
-        return 0;
 	}
-
 };

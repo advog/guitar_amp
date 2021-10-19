@@ -23,24 +23,20 @@
 
 
 
-HRESULT startRender(threadRender* pR) {
+void startRender(threadRender* pR) {
 	pR->start();
-	return 0;
 }
 
-HRESULT startProcess(threadProcess* pP) {
+void startProcess(threadProcess* pP) {
 	pP->start();
-	return 0;
 }
 
-HRESULT startRead(threadRead* pR) {
+void startRead(threadRead* pR) {
 	pR->start();
-	return 0;
 }
 
-HRESULT FUCK() {
-	std::cout << "FUCK\n";
-	return 0;
+void FUDGE() {
+	std::cout << "FUDGE\n";
 }
 
 class threadMaster {
@@ -65,36 +61,31 @@ public:
 	WAVEFORMATEXTENSIBLE* outFormat;
 	WAVEFORMATEXTENSIBLE* inFormat;
 
-	HRESULT setEnumerator(IMMDeviceEnumerator* p) {
+	void setEnumerator(IMMDeviceEnumerator* p) {
 		pEnumerator = p;
-		return 0;
 	}
 
-	HRESULT initializeOutputDevice() {
+	void initializeOutputDevice() {
 		pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pOutDevice);
-		return 0;
 	}
 
-	HRESULT initializeInputDevice() {
+	void initializeInputDevice() {
 		pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pInDevice);
-		return 0;
 	}
 
-	HRESULT setBufferSettings(UINT32 prl, UINT32 rpl, UINT32 rppl, UINT32 prpl) {
+	void setBufferSettings(UINT32 prl, UINT32 rpl, UINT32 rppl, UINT32 prpl) {
 		prPacketLength = prpl;
 		rpPacketLength = rppl;
 		prBufferSize = prl;
 		rpBufferSize = rpl;
-		return 0;
 	}
 
-	HRESULT initializeDataBuffers() {
+	void initializeDataBuffers() {
 		proc_to_render = new dataBuffer<float*>(prBufferSize);
 		reader_to_proc = new dataBuffer<float*>(rpBufferSize);
-		return 0;
 	}
 
-	HRESULT initializeThreadRenderer() {
+	void initializeThreadRenderer() {
 		pRender = new threadRender();
 
 		pRender->setDevice(pOutDevice);
@@ -108,11 +99,9 @@ public:
 		pRender->initializeBufferHandle();
 
 		outFormat = pRender->getDefaultFormatExtensible();
-		
-		return 0;
 	}
 
-	HRESULT initializeThreadRead() {
+	void initializeThreadRead() {
 		pRead = new threadRead();
 
 		pRead->setDevice(pInDevice);
@@ -126,11 +115,9 @@ public:
 		pRead->initializeBufferHandle();
 
 		inFormat = pRead->getDefaultFormatExtensible();
-
-		return 0;
 	}
 	
-	HRESULT initializeThreadProcessor() {
+	void initializeThreadProcessor() {
 		pProcess = new threadProcess();
 
 		pProcess->setBuffers(reader_to_proc, proc_to_render);
@@ -138,11 +125,9 @@ public:
 		pProcess->setOutputPacketLength(prPacketLength, prBufferSize);
 
 		pProcess->setInputPacketLength(rpPacketLength, rpBufferSize);
-		
-		return 0;
 	}
 
-	HRESULT start() {
+	void start() {
 
 		std::thread* captureThread = new std::thread(startRead, pRead);
 		//Sleep(10);
@@ -154,7 +139,5 @@ public:
 		renderThread->join();
 		processThread->join();
 		captureThread->join();
-		
-		return 0;
 	}
 };
